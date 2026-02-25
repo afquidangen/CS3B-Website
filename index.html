@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS3B | Section Website</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --bg: #05070a;
+            --card: #0d1117;
+            --accent: #00d4ff;
+            --text: #ffffff;
+            --dim: #8b949e;
+            --border: #30363d;
+            --pink: #f472b6;
+            --warn: #facc15;
+            --glow: rgba(0, 212, 255, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            line-height: 1.6; 
+            background-image: radial-gradient(circle at 2px 2px, var(--border) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        /* NAVIGATION */
+        .nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 6%; border-bottom: 1px solid var(--border); 
+            background: rgba(5, 7, 10, 0.85); position: fixed; 
+            width: 100%; top: 0; z-index: 1000; backdrop-filter: blur(15px); 
+        }
+        .logo { font-weight: 800; font-family: 'JetBrains Mono'; font-size: 1.1rem; }
+        .logo span { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 10px; }
+        .nav-links button { 
+            background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--dim); 
+            cursor: pointer; font-family: 'JetBrains Mono'; padding: 8px 16px; border-radius: 8px;
+            font-size: 0.75rem; transition: 0.3s; font-weight: 600;
+        }
+        .nav-links button:hover, .nav-links button.active { 
+            color: var(--accent); border-color: var(--accent); background: rgba(0, 212, 255, 0.05);
+        }
+
+        /* HEADERS */
+        .header-text-area { width: 100%; height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 60px; }
+        .header-text-area h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 800; letter-spacing: -3px; }
+        .header-text-area p { font-family: 'JetBrains Mono'; color: var(--accent); letter-spacing: 5px; font-size: 0.7rem; }
+
+        /* DASHBOARD BANNER */
+        .dashboard-banner {
+            width: 90%; height: 300px; margin: 0 auto 30px auto;
+            border-radius: 20px; border: 1px solid var(--border);
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('website_header.png');
+            background-size: cover; background-position: center;
+            display: flex; align-items: flex-end; padding: 25px;
+        }
+
+        /* IMAGE PLACEHOLDERS */
+        .img-placeholder {
+            width: 100%; min-height: 450px;
+            background: #000; border: 1px dashed var(--border);
+            border-radius: 15px; display: flex; align-items: center;
+            justify-content: center; color: var(--dim); font-family: 'JetBrains Mono';
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+        }
+        /* PAGES */
+        .page { display: none; padding: 20px 6% 60px 6%; animation: fadeIn 0.4s ease forwards; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* GRID & CARDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 25px; margin-bottom: 10px;}
+        .card h3 { font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+
+        /* SECTION TITLES */
+        .section-title { text-align: center; font-family: 'JetBrains Mono'; color: var(--text); font-size: 2rem; font-weight: 800; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; }
+        .section-title span { color: var(--accent); }
+
+        /* TASKS */
+        .task-item { background: #000; border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--accent); }
+        .task-item.critical { border-left-color: var(--pink); }
+
+        /* QUICK ACCESS */
+        .quick-btn {
+            width: 100%; padding: 14px; margin-bottom: 8px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 12px; color: #ffffff !important; 
+            font-family: 'JetBrains Mono'; font-size: 0.75rem; font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; text-decoration: none; transition: 0.2s;
+        }
+
+        /* OFFICERS TREE */
+        .tree-wrapper { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .org-level { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; width: 100%; }
+        .officer-node { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; min-width: 180px; text-align: center; }
+        .officer-node.president { border: 2px solid var(--accent); box-shadow: 0 0 15px var(--glow); }
+        .rank-tag { font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; }
+        .officer-name { font-weight: 700; font-size: 0.9rem; color: #fff; }
+        .connector { width: 2px; height: 20px; background: var(--border); }
+
+        /* MOBILE RESPONSIVENESS */
+@media (max-width: 600px) {
+    .nav {
+        flex-direction: column; /* Stacks Logo and Links */
+        gap: 15px;
+        padding: 15px 20px;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        gap: 5px; /* Tighter gap for small screens */
+    }
+
+    .nav-links button {
+        padding: 8px 10px; /* Smaller padding */
+        font-size: 0.65rem; /* Slightly smaller text */
+        flex: 1; /* Makes buttons grow to fill the width equally */
+        text-align: center;
+    }
+
+    .header-text-area {
+        padding-top: 120px; /* Adds space so the logo/nav doesn't cover the title */
+    }
+}
+
+        footer { text-align: center; padding: 40px; color: #333; font-family: 'JetBrains Mono'; font-size: 0.6rem; }
+    </style>
+</head>
+<body>
+
+    <nav class="nav">
+        <div class="logo">CS3B<span>.OS</span></div>
+        <div class="nav-links">
+            <button onclick="show('home')" class="active" id="nav-home">DASHBOARD</button>
+            <button onclick="show('officers')" id="nav-officers">MANAGEMENT</button>
+            <button onclick="show('utility')" id="nav-utility">SCHEDULES</button>
+        </div>
+    </nav>
+
+    <header class="header-text-area">
+        <h1>BSCS 3B</h1>
+        <p>BLOCK_SYSTEMS_ACCESS_GRANTED</p>
+    </header>
+
+    <section id="home" class="page active">
+        <div class="dashboard-banner">
+            <div style="background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 10px; font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--accent); border: 1px solid var(--border);">
+                VISUAL_FEED_STABLE
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3><i data-lucide="terminal"></i>REMINDERS_AND_TASKS</h3>
+                <div class="task-item critical">
+                    <p style="font-size: 0.85rem; font-weight: 600;">Research Methodology MCO</p>
+                    <p style="font-size: 0.65rem; color: var(--dim); font-family: 'JetBrains Mono';">DUE: MARCH 4, WEDNESDAY</p>
+                </div>
+                <div class="task-item">
+                    <p style="font-size: 0.85rem; font-weight: 600;">Creative Writing MCO Autobiography</p>
+                    <p style="font-size: 0.65rem; color: var(--dim); font-family: 'JetBrains Mono';">DUE: MARCH 3, TUESDAY</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i data-lucide="activity"></i>UNIT_METRICS</h3>
+                <div style="text-align: center; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 15px;">
+                    <span style="font-size: 3rem; font-weight: 800;">29</span>
+                    <p style="font-size: 0.6rem; color: var(--dim); font-family: 'JetBrains Mono'; letter-spacing: 2px;">TOTAL_STUDENTS</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: var(--accent); font-family: 'JetBrains Mono'; font-size: 0.7rem;">14 MALE</span>
+                    <div style="flex-grow: 1; height: 6px; background: var(--border); border-radius: 10px; display: flex; overflow: hidden;">
+                        <div style="width: 48%; background: var(--accent);"></div>
+                        <div style="width: 52%; background: var(--pink);"></div>
+                    </div>
+                    <span style="color: var(--pink); font-family: 'JetBrains Mono'; font-size: 0.7rem;">15 FEMALE</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i data-lucide="zap"></i>QUICK_ACCESS</h3>
+                <a href="masterlist.pdf" class="quick-btn"><span>CLASS_MASTERLIST.PDF</span><i data-lucide="file-text" size="14"></i></a>
+                <a href="https://docs.google.com/spreadsheets/d/12QlNp9tTHPPd_SczkzSEd2sPfyGo8NH4CV_l7q92AJs/edit?usp=sharing" class="quick-btn"><span>FINANCIAL_LEDGER.XLS</span><i data-lucide="database" size="14"></i></a>
+                <a href="https://docs.google.com/document/d/1kq4opzmBBJxmkcFl10zKeTja9c3hq4w8JyT09EDiTnA/edit?usp=sharing" class="quick-btn"><span>ACTIVITIES.DOCS</span><i data-lucide="database" size="14"></i></a>
+            </div>
+            </div>
+
+
+
+        </div>
+    </section>
+
+    <section id="officers" class="page">
+        <h2 class="section-title">BSCS 3B <span>OFFICERS</span></h2>
+        
+        <div class="tree-wrapper">
+            <div class="officer-node president">
+                <div class="rank-tag">President</div>
+                <div class="officer-name">ALYSSA FAYE QUIDANGEN</div>
+            </div>
+            <div class="connector"></div>
+            <div class="org-level">
+                <div class="officer-node"><div class="rank-tag">VP Internal</div><div class="officer-name">DESIREE ANN GUZMAN</div></div>
+                <div class="officer-node"><div class="rank-tag">VP External</div><div class="officer-name">BHLEZZIE JOY GARBIN</div></div>
+            </div>
+            <div class="connector"></div>
+            <div class="org-level">
+                <div class="officer-node"><div class="rank-tag">Secretary</div><div class="officer-name">SHIENA ROCELL NAUNGAYAN</div></div>
+                <div class="officer-node"><div class="rank-tag">Asst. Secretary</div><div class="officer-name">CAMELLE BALOIS</div></div>
+                <div class="officer-node"><div class="rank-tag">Auditor</div><div class="officer-name">MARK JASSON DAPON</div></div>
+            </div>
+            <div class="connector"></div>
+            <div class="org-level">
+                <div class="officer-node"><div class="rank-tag">Treasurer</div><div class="officer-name">CHANTAL GUERRERO</div></div>
+                <div class="officer-node"><div class="rank-tag">P.R.O.</div><div class="officer-name">CEEDRIC GACOSCOS</div></div>
+            </div>
+            <div class="connector"></div>
+            <div class="org-level">
+                <div class="officer-node"><div class="rank-tag">Business Mgr</div><div class="officer-name">KYLA CABLAY</div></div>
+                <div class="officer-node"><div class="rank-tag">Business Mgr</div><div class="officer-name">XYRIL GABRIEL ABAYA</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="utility" class="page">
+        <div class="card">
+            <h3><i data-lucide="calendar"></i>ACADEMIC_TIMETABLE</h3>
+            <div class="img-placeholder" style="background-image: url('schedule.jpg');"></div>
+        </div>
+
+        <div class="card">
+            <h3><i data-lucide="sparkles"></i>CLEANERS_LIST</h3>
+            <div class="img-placeholder" style="background-image: url('cleaners.png');"></div>
+        </div>
+    </section>
+
+    <footer>ROOT@CS3B:~# SESSION_STABLE_2026</footer>
+
+    <script>
+        lucide.createIcons();
+        function show(id){
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            document.querySelectorAll(".nav-links button").forEach(b => b.classList.remove("active"));
+            document.getElementById('nav-' + id).classList.add("active");
+        }
+    </script>
+</body>
+</html>
