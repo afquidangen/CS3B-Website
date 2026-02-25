@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS3B | Class System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --bg: #05070a; --card: #0d1117; --accent: #00d4ff; --text: #ffffff;
+            --dim: #8b949e; --border: #30363d; --pink: #f472b6; --warn: #facc15;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); 
+            background-image: radial-gradient(circle at 2px 2px, var(--border) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        /* NAVIGATION */
+        .nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 6%; border-bottom: 1px solid var(--border); 
+            background: rgba(5, 7, 10, 0.85); position: fixed; width: 100%; top: 0; z-index: 1000; backdrop-filter: blur(12px); 
+        }
+        .nav-links button { background: none; border: none; color: var(--dim); cursor: pointer; font-family: 'JetBrains Mono'; font-size: 0.85rem; margin-left: 20px; transition: 0.3s; }
+        .nav-links button.active { color: var(--accent); }
+
+        /* HEADER */
+        .header-photo {
+            width: 100%; height: 250px; background: linear-gradient(rgba(5,7,10,0.7), rgba(5,7,10,0.9)), black;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 60px;
+        }
+
+        .page { display: none; padding: 40px 6%; animation: fadeIn 0.4s ease forwards; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* DASHBOARD GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; position: relative; }
+        .card h3 { font-family: 'JetBrains Mono'; font-size: 0.75rem; color: var(--accent); margin-bottom: 15px; text-transform: uppercase; }
+
+        /* TASK CONTAINER */
+        #task-container { max-height: 300px; overflow-y: auto; padding-right: 5px; }
+        #task-container::-webkit-scrollbar { width: 4px; }
+        #task-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        /* TASK ITEMS */
+        .task-item { background: #000; padding: 12px; border-radius: 8px; border-left: 3px solid var(--accent); margin-bottom: 10px; transition: 0.3s; }
+        .task-item.priority { border-left-color: var(--pink); border-right: 1px solid rgba(244, 114, 182, 0.2); }
+        .task-name { font-weight: 600; font-size: 0.9rem; display: block; }
+        .task-due { font-size: 0.7rem; color: var(--dim); font-family: 'JetBrains Mono'; margin-top: 4px; display: block; }
+
+        /* STATUS DOT */
+        .status-pulse { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        footer { text-align: center; padding: 40px; border-top: 1px solid var(--border); margin-top: 40px; font-size: 0.7rem; color: #444; font-family: 'JetBrains Mono'; }
+    </style>
+</head>
+<body>
+
+    <nav class="nav">
+        <div class="logo" style="font-family: 'JetBrains Mono'; font-weight: 800;">CS3B<span>.SYS</span></div>
+        <div class="nav-links">
+            <button onclick="show('home')" class="active" id="nav-home">Dashboard</button>
+            <button onclick="show('officers')" id="nav-officers">Leaders</button>
+            <button onclick="show('utility')" id="nav-utility">Schedule</button>
+        </div>
+    </nav>
+
+    <div class="header-photo">
+        <h1 style="font-size: 3.5rem; font-weight: 800;">CORE_DASHBOARD</h1>
+        <p style="font-family: 'JetBrains Mono'; color: var(--accent); letter-spacing: 5px;">A.Y. 2025-2026</p>
+    </div>
+
+    <section id="home" class="page active">
+        <div class="grid">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="display: flex; align-items: center;"><div class="status-pulse"></div>Upcoming_Tasks</h3>
+                    <i data-lucide="refresh-cw" size="14" style="cursor: pointer; color: var(--dim);" onclick="fetchTasks()"></i>
+                </div>
+                <div id="task-container">
+                    <p style="font-size: 0.8rem; color: var(--dim);">Fetching class data...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Class_Metrics</h3>
+                <div style="display: flex; justify-content: space-around; padding: 10px 0;">
+                    <div style="text-align: center;"><span style="font-size: 2.5rem; font-weight: 800; color: var(--accent);">14</span><p style="font-size: 0.5rem; color: var(--dim);">MALE</p></div>
+                    <div style="text-align: center;"><span style="font-size: 2.5rem; font-weight: 800; color: var(--pink);">15</span><p style="font-size: 0.5rem; color: var(--dim);">FEMALE</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="officers" class="page">
+        <div class="card"><h3>Official_Hierarchy</h3><p style="color:var(--dim)">Refer to class organization chart.</p></div>
+    </section>
+
+    <section id="utility" class="page">
+        <div class="card"><h3>Class_Schedule</h3><p style="color:var(--dim)">Timetable synchronized via cloud.</p></div>
+    </section>
+
+    <footer>DATABASE_LINK_ESTABLISHED // CS3B.SYS</footer>
+
+    <script>
+        lucide.createIcons();
+
+        // YOUR VALID GOOGLE SHEET CSV LINK
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPdEvYMNDdgkDsDltfAuzIMHShlGxZN6LhefbFoTI7hWAzbXSd3IpAj5SGtgFHylvCF4W4DNrRDegC/pub?gid=0&single=true&output=csv';
+
+        async function fetchTasks() {
+            const container = document.getElementById('task-container');
+            
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                if (!response.ok) throw new Error('Network error');
+                
+                const data = await response.text();
+                // Split by new line, remove empty rows
+                const rows = data.split(/\r?\n/).filter(row => row.trim() !== '');
+                
+                let html = '';
+                
+                rows.forEach((row, index) => {
+                    // Split by comma, but ignore commas inside quotes
+                    const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    const taskName = columns[0] ? columns[0].replace(/"/g, "").trim() : "";
+                    const taskDue = columns[1] ? columns[1].replace(/"/g, "").trim() : "";
+
+                    // Skip the header row (Task 1 Name, etc.)
+                    if(taskName && !taskName.toLowerCase().includes("task 1 name")) {
+                        // First real task gets the priority pink border
+                        const isPriority = html === '' ? 'priority' : '';
+                        
+                        html += `
+                            <div class="task-item ${isPriority}">
+                                <span class="task-name">${taskName}</span>
+                                <span class="task-due">${taskDue || 'No Date Set'}</span>
+                            </div>
+                        `;
+                    }
+                });
+                
+                container.innerHTML = html || '<p style="color:var(--dim); font-size: 0.8rem;">No active tasks in the sheet.</p>';
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                container.innerHTML = '<p style="color:var(--pink); font-size: 0.8rem;">[ERR]: Sync Failed. Check sheet publication.</p>';
+            }
+        }
+
+        function show(id){
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            document.querySelectorAll(".nav-links button").forEach(b => b.classList.remove("active"));
+            document.getElementById('nav-' + id).classList.add("active");
+        }
+
+        // Run on load
+        window.onload = fetchTasks;
+    </script>
+</body>
+</html>
